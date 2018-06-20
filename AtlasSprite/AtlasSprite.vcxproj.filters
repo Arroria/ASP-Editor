@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="_main">
+      <UniqueIdentifier>{5b5675bb-f99f-47bb-80bd-b37b5e7f57f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_main\_unmanageable">
+      <UniqueIdentifier>{1f1a1f52-4213-4e86-bedf-e98d86766fd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_main\_unmanageable\리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="mng">
+      <UniqueIdentifier>{cb733043-fc78-43b2-94b5-ee35e69beb23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="singleton">
+      <UniqueIdentifier>{d0d90286-12ce-48e5-89be-c510aef080fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="singleton\interface">
+      <UniqueIdentifier>{5141ae90-73d9-41de-80d0-a98653ae402b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="singleton\PrimitiveUp">
+      <UniqueIdentifier>{86d9f0af-d25c-462a-9695-9080344c0c72}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h">
+      <Filter>_main\_unmanageable</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>_main\_unmanageable</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>_main</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>_main</Filter>
+    </ClInclude>
+    <ClInclude Include="MainLoop.h">
+      <Filter>_main</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcessManager.h">
+      <Filter>_main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\IME\IME\IME_Manager.h">
+      <Filter>mng</Filter>
+    </ClInclude>
+    <ClInclude Include="Atlas.h" />
+    <ClInclude Include="Singleton.h">
+      <Filter>singleton\interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="PlaneRenderer.h">
+      <Filter>singleton\PrimitiveUp</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameRenderer.h">
+      <Filter>singleton\PrimitiveUp</Filter>
+    </ClInclude>
+    <ClInclude Include="LineRenderer.h">
+      <Filter>singleton\PrimitiveUp</Filter>
+    </ClInclude>
+    <ClInclude Include="ASP_Editor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AtlasSprite.rc">
+      <Filter>_main\_unmanageable\리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>_main\_unmanageable\리소스 파일</Filter>
+    </Image>
+    <Image Include="AtlasSprite.ico">
+      <Filter>_main\_unmanageable\리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>_main</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>_main</Filter>
+    </ClCompile>
+    <ClCompile Include="MainLoop.cpp">
+      <Filter>_main</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessManager.cpp">
+      <Filter>_main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\IME\IME\IME_Manager.cpp">
+      <Filter>mng</Filter>
+    </ClCompile>
+    <ClCompile Include="Atlas.cpp" />
+    <ClCompile Include="Singleton.cpp">
+      <Filter>singleton\interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="LineRenderer.cpp">
+      <Filter>singleton\PrimitiveUp</Filter>
+    </ClCompile>
+    <ClCompile Include="PlaneRenderer.cpp">
+      <Filter>singleton\PrimitiveUp</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameRenderer.cpp">
+      <Filter>singleton\PrimitiveUp</Filter>
+    </ClCompile>
+    <ClCompile Include="ASP_Editor.cpp" />
+  </ItemGroup>
+</Project>
