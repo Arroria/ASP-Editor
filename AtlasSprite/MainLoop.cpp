@@ -4,7 +4,9 @@
 
 
 #include "Atlas.h"
+#include "ASPEditor.h"
 Atlas* g_atlas = nullptr;
+ASPEditor* aspe;
 
 bool MainLoop::Initialize()
 {
@@ -29,9 +31,11 @@ bool MainLoop::Initialize()
 	DEVICE->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
 	DEVICE->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	DEVICE->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	DEVICE->SetRenderState(D3DRS_ZENABLE, false);
+	DEVICE->SetRenderState(D3DRS_ZWRITEENABLE, false);
 
-	g_atlas = new Atlas(DEVICE);
-
+	///g_atlas = new Atlas(DEVICE);
+	aspe = new ASPEditor(DEVICE);
 	return true;
 }
 
@@ -40,7 +44,7 @@ void MainLoop::Update()
 	g_inputDevice.BeginFrame(g_processManager->GetWndInfo()->hWnd);
 
 	SingletonInstance(Camera)->Update();
-	g_atlas->Update();
+	///g_atlas->Update();
 
 	g_inputDevice.EndFrame();
 }
@@ -49,9 +53,9 @@ bool MainLoop::Render()
 {
 	SingletonInstance(Camera)->ApplyTransform();
 
+	aspe->Render();
 
-
-	g_atlas->Render();
+	///g_atlas->Render();
 	return true;
 }
 
@@ -70,8 +74,10 @@ bool MainLoop::Release()
 LRESULT MainLoop::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	g_inputDevice.MsgProc(msg, wParam, lParam);
-	if (g_atlas)
-		g_atlas->MsgProc(hWnd, msg, wParam, lParam);
+	///if (g_atlas)
+	///	g_atlas->MsgProc(hWnd, msg, wParam, lParam);
+
+	aspe->MsgProc(hWnd, msg, wParam, lParam);
 
 	switch (msg)
 	{

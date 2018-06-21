@@ -152,7 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\IME\IME\IME_Manager.h" />
-    <ClInclude Include="ASP_Editor.h" />
+    <ClInclude Include="ASPEditor.h" />
     <ClInclude Include="Atlas.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FrameRenderer.h" />
@@ -162,13 +162,14 @@
     <ClInclude Include="PlaneRenderer.h" />
     <ClInclude Include="ProcessManager.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SimpleDrawer.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\IME\IME\IME_Manager.cpp" />
-    <ClCompile Include="ASP_Editor.cpp" />
+    <ClCompile Include="ASPEditor.cpp" />
     <ClCompile Include="Atlas.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FrameRenderer.cpp" />
@@ -177,6 +178,7 @@
     <ClCompile Include="MainLoop.cpp" />
     <ClCompile Include="PlaneRenderer.cpp" />
     <ClCompile Include="ProcessManager.cpp" />
+    <ClCompile Include="SimpleDrawer.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

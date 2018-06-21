@@ -60,7 +60,8 @@
     <ClInclude Include="LineRenderer.h">
       <Filter>singleton\PrimitiveUp</Filter>
     </ClInclude>
-    <ClInclude Include="ASP_Editor.h" />
+    <ClInclude Include="SimpleDrawer.h" />
+    <ClInclude Include="ASPEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AtlasSprite.rc">
@@ -105,6 +106,7 @@
     <ClCompile Include="FrameRenderer.cpp">
       <Filter>singleton\PrimitiveUp</Filter>
     </ClCompile>
-    <ClCompile Include="ASP_Editor.cpp" />
+    <ClCompile Include="SimpleDrawer.cpp" />
+    <ClCompile Include="ASPEditor.cpp" />
   </ItemGroup>
 </Project>
