@@ -65,12 +65,20 @@ void ASPEditor::Render()
 
 
 
-	D3DXMATRIX w;
-	D3DXMatrixScaling(&w, m_refTex->info.Width, m_refTex->info.Height, 1);
-	m_device->SetTransform(D3DTS_WORLD, &w);
+	//텍스쳐 렌더
+	{
+		D3DXMATRIX w;
+		D3DXMatrixScaling(&w, m_refTex->info.Width, m_refTex->info.Height, 1);
+		m_device->SetTransform(D3DTS_WORLD, &w);
 
-	m_device->SetTexture(0, m_refTex->texture);
- 	SingletonInstance(SimpleDrawer)->DrawTexPlane(m_device);
+		//텍스쳐
+		m_device->SetTexture(0, m_refTex->texture);
+		SingletonInstance(SimpleDrawer)->DrawTexPlane(m_device);
+
+		//텍스쳐 테두리
+		m_device->SetTexture(0, nullptr);
+		SingletonInstance(SimpleDrawer)->DrawFrame(m_device, D3DXCOLOR(1, 0, 1, 1));
+	}
 }
 
 

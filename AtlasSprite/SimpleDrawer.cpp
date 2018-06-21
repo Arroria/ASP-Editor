@@ -38,7 +38,7 @@ HRESULT SimpleDrawer::DrawTexPlane(LPDIRECT3DDEVICE9 device)
 HRESULT SimpleDrawer::DrawColorPlane(LPDIRECT3DDEVICE9 device, const D3DCOLOR & color)
 {
 	for (size_t i = 0; i < 4; i++)
-		m_colorPlane->c = color;
+		m_colorPlane[i].c = color;
 
 	PC_Vertex::SetFVF(device);
 	return device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, &m_colorPlane[0], sizeof(PC_Vertex));
@@ -47,7 +47,7 @@ HRESULT SimpleDrawer::DrawColorPlane(LPDIRECT3DDEVICE9 device, const D3DCOLOR & 
 HRESULT SimpleDrawer::DrawFrame(LPDIRECT3DDEVICE9 device, const D3DCOLOR & color)
 {
 	for (size_t i = 0; i < 5; i++)
-		m_frame->c = color;
+		m_frame[i].c = color;
 
 	PC_Vertex::SetFVF(device);
 	return device->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, &m_frame[0], sizeof(PC_Vertex));
@@ -56,7 +56,7 @@ HRESULT SimpleDrawer::DrawFrame(LPDIRECT3DDEVICE9 device, const D3DCOLOR & color
 HRESULT SimpleDrawer::DrawLine(LPDIRECT3DDEVICE9 device, const D3DCOLOR & color)
 {
 	for (size_t i = 0; i < 2; i++)
-		m_line->c = color;
+		m_line[i].c = color;
 
 	PC_Vertex::SetFVF(device);
 	return device->DrawPrimitiveUP(D3DPT_LINELIST, 1, &m_line[0], sizeof(PC_Vertex));
