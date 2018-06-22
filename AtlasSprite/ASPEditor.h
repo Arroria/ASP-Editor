@@ -30,17 +30,22 @@ class ASPEditor
 
 private:
 	const LPDIRECT3DDEVICE9 m_device;
+	D3DXVECTOR3 m_rayCastPlane[4];
 
 	ASPE_RefTex* m_refTex;
 	POINT m_gridInterval;
+	POINT m_mousePoint;
 
 
 	IMEDevice* m_imeDevice;
 	IMEUsage m_imeUsage;
 
 private:
+	void UpdateMouseUV();
+
 	bool RegistTexture(const std::filesystem::path& path);
 	void SetDefaultCamera();
+	void CreateRaycastPlane();
 
 public:
 	void MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

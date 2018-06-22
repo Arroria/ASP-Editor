@@ -35,7 +35,10 @@ void ASPEditor::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	auto ApplyPath = [this](const wchar_t* path)
 	{
 		if (RegistTexture(path))
+		{
 			SetDefaultCamera();
+			CreateRaycastPlane();
+		}
 	};
 
 	if (uMsg == WM_DROPFILES)
@@ -69,6 +72,18 @@ void ASPEditor::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void ASPEditor::Update()
 {
+	if (m_refTex)
+		UpdateMouseUV();
+
+	//TEMP RANGE
+	{
+		if (g_inputDevice.IsKeyDown(VK_NUMPAD7))
+			cout << "Grid Interval\n- " << m_gridInterval.x << "\n- " << m_gridInterval.y << endl;
+	}
+
+
+
+
 	if (!m_imeDevice)
 	{
 		auto IMEDeviceCreate = [this](IMEUsage imeUsage)
@@ -153,6 +168,43 @@ void ASPEditor::Render()
 
 
 
+void ASPEditor::UpdateMouseUV()
+{
+	D3DXVECTOR3 rayPos, rayDir;
+	{
+		D3DVIEWPORT9 viewPort;
+		D3DXMATRIX invViewM, projM;
+		POINT mousePos = g_inputDevice.MousePos();
+		m_device->GetViewport(&viewPort);
+		m_device->GetTransform(D3DTS_VIEW, &invViewM);
+		m_device->GetTransform(D3DTS_PROJECTION, &projM);
+		D3DXMatrixInverse(&invViewM, 0, &invViewM);
+
+		rayDir.x = (2 * mousePos.x / (float)viewPort.Width - 1) / projM._11;
+		rayDir.y = (-2 * mousePos.y / (float)viewPort.Height + 1) / projM._22;
+		rayDir.z = 1;
+		D3DXVec3TransformNormal(&rayDir, &rayDir, &invViewM);
+		D3DXVec3Normalize(&rayDir, &rayDir);
+
+		rayPos.x = invViewM._41;
+		rayPos.y = invViewM._42;
+		rayPos.z = invViewM._43;
+	}
+
+	float u, v, dist;
+	if (D3DXIntersectTri(&m_rayCastPlane[0], &m_rayCastPlane[1], &m_rayCastPlane[2], &rayPos, &rayDir, &u, &v, &dist))
+		; //Nothing need
+	else if (D3DXIntersectTri(&m_rayCastPlane[3], &m_rayCastPlane[2], &m_rayCastPlane[1], &rayPos, &rayDir, &u, &v, &dist))
+	{
+		u = 1 - u;
+		v = 1 - v;
+	}
+	else
+		m_mousePoint.x = m_mousePoint.y = -1;
+}
+
+
+
 bool ASPEditor::RegistTexture(const std::filesystem::path & path)
 {
 	ASPE_RefTex* refTex(nullptr);
@@ -189,4 +241,12 @@ void ASPEditor::SetDefaultCamera()
 		info.Width : info.Height
 	);
 	SingletonInstance(Camera)->SetFocus(D3DXVECTOR2(0, 0));
+}
+
+void ASPEditor::CreateRaycastPlane()
+{
+	m_rayCastPlane[0] = D3DXVECTOR3((int)m_refTex->info.Width * -0.5f, (int)m_refTex->info.Height * +0.5f, 0);
+	m_rayCastPlane[1] = D3DXVECTOR3((int)m_refTex->info.Width * +0.5f, (int)m_refTex->info.Height * +0.5f, 0);
+	m_rayCastPlane[2] = D3DXVECTOR3((int)m_refTex->info.Width * -0.5f, (int)m_refTex->info.Height * -0.5f, 0);
+	m_rayCastPlane[3] = D3DXVECTOR3((int)m_refTex->info.Width * +0.5f, (int)m_refTex->info.Height * -0.5f, 0);
 }
