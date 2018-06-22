@@ -45,6 +45,7 @@ void MainLoop::Update()
 
 	SingletonInstance(Camera)->Update();
 	///g_atlas->Update();
+	aspe->Update();
 
 	g_inputDevice.EndFrame();
 }
@@ -77,7 +78,8 @@ LRESULT MainLoop::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	///if (g_atlas)
 	///	g_atlas->MsgProc(hWnd, msg, wParam, lParam);
 
-	aspe->MsgProc(hWnd, msg, wParam, lParam);
+	if (aspe)
+		aspe->MsgProc(hWnd, msg, wParam, lParam);
 
 	switch (msg)
 	{

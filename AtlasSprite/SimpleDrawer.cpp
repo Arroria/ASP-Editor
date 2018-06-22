@@ -21,8 +21,11 @@ SimpleDrawer::SimpleDrawer()
 	m_frame[3] = PC_Vertex(D3DXVECTOR3(-0.5f, -0.5f, 0), D3DXCOLOR(0, 0, 0, 1));
 	m_frame[4] = PC_Vertex(D3DXVECTOR3(-0.5f, +0.5f, 0), D3DXCOLOR(0, 0, 0, 1));
 
-	m_line[0] = PC_Vertex(D3DXVECTOR3(0, 0, 0), D3DXCOLOR(0, 0, 0, 1));
-	m_line[1] = PC_Vertex(D3DXVECTOR3(0, 0, 0), D3DXCOLOR(0, 0, 0, 1));
+	m_lineX[0] = PC_Vertex(D3DXVECTOR3(0, 0, 0), D3DXCOLOR(0, 0, 0, 1));
+	m_lineX[1] = PC_Vertex(D3DXVECTOR3(1, 0, 0), D3DXCOLOR(0, 0, 0, 1));
+
+	m_lineY[0] = PC_Vertex(D3DXVECTOR3(0, 0, 0), D3DXCOLOR(0, 0, 0, 1));
+	m_lineY[1] = PC_Vertex(D3DXVECTOR3(0, 1, 0), D3DXCOLOR(0, 0, 0, 1));
 }
 SimpleDrawer::~SimpleDrawer()
 {
@@ -53,11 +56,11 @@ HRESULT SimpleDrawer::DrawFrame(LPDIRECT3DDEVICE9 device, const D3DCOLOR & color
 	return device->DrawPrimitiveUP(D3DPT_LINESTRIP, 4, &m_frame[0], sizeof(PC_Vertex));
 }
 
-HRESULT SimpleDrawer::DrawLine(LPDIRECT3DDEVICE9 device, const D3DCOLOR & color)
+HRESULT SimpleDrawer::DrawLine(LPDIRECT3DDEVICE9 device, const D3DCOLOR & color, PC_Vertex* lineVertex)
 {
 	for (size_t i = 0; i < 2; i++)
-		m_line[i].c = color;
+		lineVertex[i].c = color;
 
 	PC_Vertex::SetFVF(device);
-	return device->DrawPrimitiveUP(D3DPT_LINELIST, 1, &m_line[0], sizeof(PC_Vertex));
+	return device->DrawPrimitiveUP(D3DPT_LINELIST, 1, &lineVertex[0], sizeof(PC_Vertex));
 }

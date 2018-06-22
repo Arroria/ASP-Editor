@@ -10,8 +10,12 @@ constexpr static const wchar_t* defaultResultPath = L"./_Result.asp";
 
 ASPEditor::ASPEditor(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
-	
+
 	, m_refTex(nullptr)
+	, m_gridInterval{ 0, 0 }
+
+	, m_imeDevice(nullptr)
+	, m_imeUsage(IMEUsage::_NULL)
 {
 	m_device->AddRef();
 }
@@ -24,6 +28,10 @@ ASPEditor::~ASPEditor()
 
 void ASPEditor::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (m_imeDevice)
+		m_imeDevice->MsgProc(hWnd, uMsg, wParam, lParam);
+
+
 	auto ApplyPath = [this](const wchar_t* path)
 	{
 		if (RegistTexture(path))
@@ -55,6 +63,34 @@ void ASPEditor::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				ApplyPath(&pathBigBuffer[0]);
 			}
 		}
+		DragFinish(hDrop);
+	}
+}
+
+void ASPEditor::Update()
+{
+	if (!m_imeDevice)
+	{
+		auto IMEDeviceCreate = [this](IMEUsage imeUsage)
+		{
+			m_imeUsage = imeUsage;
+			m_imeDevice = new IMEDevice;
+		};
+
+		if (g_inputDevice.IsKeyDown(VK_NUMPAD1))	IMEDeviceCreate(IMEUsage::GridSizeX);
+		if (g_inputDevice.IsKeyDown(VK_NUMPAD2))	IMEDeviceCreate(IMEUsage::GridSizeY);
+	}
+	else
+	{
+		if (g_inputDevice.IsKeyDown(VK_RETURN))
+		{
+			switch (m_imeUsage)
+			{
+			case IMEUsage::GridSizeX:	m_gridInterval.x = _wtoi(m_imeDevice->GetString().data());	break;
+			case IMEUsage::GridSizeY:	m_gridInterval.y = _wtoi(m_imeDevice->GetString().data());	break;
+			}
+			SAFE_DELETE(m_imeDevice);
+		}
 	}
 }
 
@@ -78,6 +114,40 @@ void ASPEditor::Render()
 		//텍스쳐 테두리
 		m_device->SetTexture(0, nullptr);
 		SingletonInstance(SimpleDrawer)->DrawFrame(m_device, D3DXCOLOR(1, 0, 1, 1));
+
+		//그리드
+		if (m_gridInterval.x > 0)
+		{
+			D3DXMATRIX sm;
+			D3DXMatrixScaling(&sm, 1, m_refTex->info.Height, 1);
+
+			for (size_t i = m_gridInterval.x; i < m_refTex->info.Height; i += m_gridInterval.x)
+			{
+				D3DXMATRIX tm;
+				D3DXMatrixTranslation(&tm,
+					(int)m_refTex->info.Width * -0.5f + i,
+					(int)m_refTex->info.Height * -0.5f,
+					0);
+				m_device->SetTransform(D3DTS_WORLD, &(sm * tm));
+				SingletonInstance(SimpleDrawer)->DrawLineY(m_device, D3DXCOLOR(1, 1, 1, 0.5f));
+			}
+		}
+		if (m_gridInterval.y > 0)
+		{
+			D3DXMATRIX sm;
+			D3DXMatrixScaling(&sm, m_refTex->info.Width, 1, 1);
+			
+			for (size_t i = m_gridInterval.y; i < m_refTex->info.Width; i += m_gridInterval.y)
+			{
+				D3DXMATRIX tm;
+				D3DXMatrixTranslation(&tm,
+					(int)m_refTex->info.Width * -0.5f,
+					(int)m_refTex->info.Height * 0.5f - i,
+					0);
+				m_device->SetTransform(D3DTS_WORLD, &(sm * tm));
+				SingletonInstance(SimpleDrawer)->DrawLineX(m_device, D3DXCOLOR(1, 1, 1, 0.5f));
+			}
+		}
 	}
 }
 

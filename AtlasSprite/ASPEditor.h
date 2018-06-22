@@ -2,6 +2,7 @@
 #include <vector>
 #include <filesystem>
 
+//InputDevice
 #include "C:/.Arroria/Arroria SDK/InputDevice/lib/InputDevice.h"
 #ifndef _DEBUG
 #pragma comment (lib, "C:/.Arroria/Arroria SDK/InputDevice/lib/InputDevice.lib")
@@ -9,13 +10,33 @@
 #pragma comment (lib, "C:/.Arroria/Arroria SDK/InputDevice/lib/InputDeviceD.lib")
 #endif
 
+//IMEDevice
+#include "C:/.Arroria/Arroria SDK/IMEDevice/lib/IMEDevice.h"
+#ifndef _DEBUG
+#pragma comment (lib, "C:/.Arroria/Arroria SDK/IMEDevice/lib/IMEDevice.lib")
+#else
+#pragma comment (lib, "C:/.Arroria/Arroria SDK/IMEDevice/lib/IMEDeviceD.lib")
+#endif
+
 struct ASPE_RefTex;
 class ASPEditor
 {
+	enum class IMEUsage
+	{
+		_NULL,
+		GridSizeX,
+		GridSizeY,
+	};
+
 private:
 	const LPDIRECT3DDEVICE9 m_device;
 
 	ASPE_RefTex* m_refTex;
+	POINT m_gridInterval;
+
+
+	IMEDevice* m_imeDevice;
+	IMEUsage m_imeUsage;
 
 private:
 	bool RegistTexture(const std::filesystem::path& path);
@@ -23,7 +44,7 @@ private:
 
 public:
 	void MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
+	void Update();
 	void Render();
 
 public:

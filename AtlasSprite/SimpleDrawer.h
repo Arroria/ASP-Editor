@@ -32,13 +32,17 @@ private:
 	PNT_Vertex m_texPlane[4];
 	PC_Vertex m_colorPlane[4];
 	PC_Vertex m_frame[5];
-	PC_Vertex m_line[2];
+	PC_Vertex m_lineX[2];
+	PC_Vertex m_lineY[2];
 
 public:
 	HRESULT DrawTexPlane(LPDIRECT3DDEVICE9 device);
 	HRESULT DrawColorPlane(LPDIRECT3DDEVICE9 device, const D3DCOLOR& color);
 	HRESULT DrawFrame(LPDIRECT3DDEVICE9 device, const D3DCOLOR& color);
-	HRESULT DrawLine(LPDIRECT3DDEVICE9 device, const D3DCOLOR& color);
+	inline HRESULT DrawLineX(LPDIRECT3DDEVICE9 device, const D3DCOLOR& color)	{ return DrawLine(device, color, m_lineX); }
+	inline HRESULT DrawLineY(LPDIRECT3DDEVICE9 device, const D3DCOLOR& color)	{ return DrawLine(device, color, m_lineY); }
+private: 
+	HRESULT DrawLine(LPDIRECT3DDEVICE9 device, const D3DCOLOR& color, PC_Vertex* lineVertex);
 
 public:
 	SimpleDrawer();
