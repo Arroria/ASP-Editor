@@ -22,12 +22,7 @@ struct ASP;
 struct ASPE_RefTex;
 class ASPEditor
 {
-	enum class IMEUsage
-	{
-		_NULL,
-		GridSizeX,
-		GridSizeY,
-	};
+	enum class IMEUsage;
 
 private:
 	const LPDIRECT3DDEVICE9 m_device;

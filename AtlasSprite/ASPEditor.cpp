@@ -8,6 +8,20 @@ constexpr static bool IsFailed = false;
 constexpr static const wchar_t* defaultResultPath = L"./_Result.asp";
 
 
+
+enum class ASPEditor::IMEUsage
+{
+	_NULL,
+	GridSizeX,
+	GridSizeY,
+	ASPMinU,
+	ASPMinV,
+	ASPMaxU,
+	ASPMaxV,
+};
+
+
+
 ASPEditor::ASPEditor(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
 
@@ -78,9 +92,7 @@ void ASPEditor::Update()
 	if (m_refTex)
 	{
 		if (UpdateMouseUV())
-		{
-		}
-
+			;
 	}
 
 	//TEMP RANGE
@@ -95,7 +107,15 @@ void ASPEditor::Update()
 
 	if (m_mousePoint.x != -1)
 	{
-		auto NewASP = [this]() { if (!m_asp) m_asp = new ASP; };
+		auto NewASP = [this]()
+		{
+			if (!m_asp)
+			{
+				m_asp = new ASP;
+				m_asp->minU = m_asp->maxU = m_mousePoint.x;
+				m_asp->minV = m_asp->maxV = m_mousePoint.y;
+			}
+		};
 		if (g_inputDevice.IsKeyPressed(VK_LBUTTON))
 		{
 			NewASP();
@@ -120,8 +140,13 @@ void ASPEditor::Update()
 			m_imeDevice = new IMEDevice;
 		};
 
-		if (g_inputDevice.IsKeyDown(VK_NUMPAD1))	IMEDeviceCreate(IMEUsage::GridSizeX);
-		if (g_inputDevice.IsKeyDown(VK_NUMPAD2))	IMEDeviceCreate(IMEUsage::GridSizeY);
+		if (g_inputDevice.IsKeyDown(VK_NUMPAD3))	IMEDeviceCreate(IMEUsage::GridSizeX);
+		if (g_inputDevice.IsKeyDown(VK_NUMPAD6))	IMEDeviceCreate(IMEUsage::GridSizeY);
+
+		if (g_inputDevice.IsKeyDown(VK_NUMPAD1))	IMEDeviceCreate(IMEUsage::ASPMinU);
+		if (g_inputDevice.IsKeyDown(VK_NUMPAD2))	IMEDeviceCreate(IMEUsage::ASPMinV);
+		if (g_inputDevice.IsKeyDown(VK_NUMPAD4))	IMEDeviceCreate(IMEUsage::ASPMaxU);
+		if (g_inputDevice.IsKeyDown(VK_NUMPAD5))	IMEDeviceCreate(IMEUsage::ASPMaxV);
 	}
 	else
 	{
@@ -131,6 +156,11 @@ void ASPEditor::Update()
 			{
 			case IMEUsage::GridSizeX:	m_gridInterval.x = _wtoi(m_imeDevice->GetString().data());	break;
 			case IMEUsage::GridSizeY:	m_gridInterval.y = _wtoi(m_imeDevice->GetString().data());	break;
+
+			case IMEUsage::ASPMinU:	m_asp->minU = _wtoi(m_imeDevice->GetString().data());	break;
+			case IMEUsage::ASPMinV:	m_asp->minV = _wtoi(m_imeDevice->GetString().data());	break;
+			case IMEUsage::ASPMaxU:	m_asp->maxU = _wtoi(m_imeDevice->GetString().data());	break;
+			case IMEUsage::ASPMaxV:	m_asp->maxV = _wtoi(m_imeDevice->GetString().data());	break;
 			}
 			SAFE_DELETE(m_imeDevice);
 		}
