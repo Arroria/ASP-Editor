@@ -33,6 +33,7 @@ private:
 	POINT m_mousePoint;
 
 	ASP* m_asp;
+	std::list<ASP*> m_aspList;
 
 	IMEDevice* m_imeDevice;
 	IMEUsage m_imeUsage;

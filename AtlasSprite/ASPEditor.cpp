@@ -12,12 +12,16 @@ constexpr static const wchar_t* defaultResultPath = L"./_Result.asp";
 enum class ASPEditor::IMEUsage
 {
 	_NULL,
+
 	GridSizeX,
 	GridSizeY,
+
 	ASPMinU,
 	ASPMinV,
 	ASPMaxU,
 	ASPMaxV,
+
+	RegistASP,
 };
 
 
@@ -97,12 +101,24 @@ void ASPEditor::Update()
 
 	//TEMP RANGE
 	{
-		if (g_inputDevice.IsKeyDown(VK_NUMPAD7))	cout << "Grid Interval\n- " << m_gridInterval.x << "\n- " << m_gridInterval.y << endl;
-		if (g_inputDevice.IsKeyDown(VK_NUMPAD8))	cout << "Mouse Point\n- " << m_mousePoint.x << "\n- " << m_mousePoint.y << endl;
-		if (g_inputDevice.IsKeyDown(VK_NUMPAD9))
-			m_asp ?
-				cout << "ASP area\n- " << m_asp->minU << "\n- " << m_asp->minV << "\n- " << m_asp->maxU << "\n- " << m_asp->maxV << endl :
-				cout << "ASP Not Found" << endl;
+		if (g_inputDevice.IsKeyDown(VK_F9))		cout << "Grid Interval\n- " << m_gridInterval.x << "\n- " << m_gridInterval.y << endl;
+		if (g_inputDevice.IsKeyDown(VK_F10))	cout << "Mouse Point\n- " << m_mousePoint.x << "\n- " << m_mousePoint.y << endl;
+		if (g_inputDevice.IsKeyDown(VK_F11))
+		{
+			if (g_inputDevice.IsKeyNone(VK_CONTROL))
+				m_asp ?
+					cout << "ASP area\n- " << m_asp->minU << "\n- " << m_asp->minV << "\n- " << m_asp->maxU << "\n- " << m_asp->maxV << endl :
+					cout << "ASP Not Found" << endl;
+			else
+			{
+				cout << "ASP List\n{" << endl;
+				for (auto& asp : m_aspList)
+					m_asp ?
+					wcout << "ASP : " << asp->name << "\n- " << asp->minU << "\n- " << asp->minV << "\n- " << asp->maxU << "\n- " << asp->maxV << endl :
+					wcout << "ASP Not Found" << endl;
+				cout << "}" << endl;
+			}
+		}
 	}
 
 	if (m_mousePoint.x != -1)
@@ -140,13 +156,15 @@ void ASPEditor::Update()
 			m_imeDevice = new IMEDevice;
 		};
 
-		if (g_inputDevice.IsKeyDown(VK_NUMPAD3))	IMEDeviceCreate(IMEUsage::GridSizeX);
-		if (g_inputDevice.IsKeyDown(VK_NUMPAD6))	IMEDeviceCreate(IMEUsage::GridSizeY);
+		if (g_inputDevice.IsKeyDown(VK_F5))	IMEDeviceCreate(IMEUsage::GridSizeX);
+		if (g_inputDevice.IsKeyDown(VK_F6))	IMEDeviceCreate(IMEUsage::GridSizeY);
 
-		if (g_inputDevice.IsKeyDown(VK_NUMPAD1))	IMEDeviceCreate(IMEUsage::ASPMinU);
-		if (g_inputDevice.IsKeyDown(VK_NUMPAD2))	IMEDeviceCreate(IMEUsage::ASPMinV);
-		if (g_inputDevice.IsKeyDown(VK_NUMPAD4))	IMEDeviceCreate(IMEUsage::ASPMaxU);
-		if (g_inputDevice.IsKeyDown(VK_NUMPAD5))	IMEDeviceCreate(IMEUsage::ASPMaxV);
+		if (g_inputDevice.IsKeyDown(VK_F1))	IMEDeviceCreate(IMEUsage::ASPMinU);
+		if (g_inputDevice.IsKeyDown(VK_F2))	IMEDeviceCreate(IMEUsage::ASPMinV);
+		if (g_inputDevice.IsKeyDown(VK_F3))	IMEDeviceCreate(IMEUsage::ASPMaxU);
+		if (g_inputDevice.IsKeyDown(VK_F4))	IMEDeviceCreate(IMEUsage::ASPMaxV);
+
+		if (g_inputDevice.IsKeyDown(VK_F8))	IMEDeviceCreate(IMEUsage::RegistASP);
 	}
 	else
 	{
@@ -157,10 +175,19 @@ void ASPEditor::Update()
 			case IMEUsage::GridSizeX:	m_gridInterval.x = _wtoi(m_imeDevice->GetString().data());	break;
 			case IMEUsage::GridSizeY:	m_gridInterval.y = _wtoi(m_imeDevice->GetString().data());	break;
 
-			case IMEUsage::ASPMinU:	m_asp->minU = _wtoi(m_imeDevice->GetString().data());	break;
-			case IMEUsage::ASPMinV:	m_asp->minV = _wtoi(m_imeDevice->GetString().data());	break;
-			case IMEUsage::ASPMaxU:	m_asp->maxU = _wtoi(m_imeDevice->GetString().data());	break;
-			case IMEUsage::ASPMaxV:	m_asp->maxV = _wtoi(m_imeDevice->GetString().data());	break;
+			case IMEUsage::ASPMinU:		if (m_asp)	m_asp->minU = _wtoi(m_imeDevice->GetString().data());	break;
+			case IMEUsage::ASPMinV:		if (m_asp)	m_asp->minV = _wtoi(m_imeDevice->GetString().data());	break;
+			case IMEUsage::ASPMaxU:		if (m_asp)	m_asp->maxU = _wtoi(m_imeDevice->GetString().data());	break;
+			case IMEUsage::ASPMaxV:		if (m_asp)	m_asp->maxV = _wtoi(m_imeDevice->GetString().data());	break;
+
+			case IMEUsage::RegistASP:
+				if (m_asp)
+				{
+					m_asp->name = m_imeDevice->GetString();
+					m_aspList.push_back(m_asp);
+					m_asp = nullptr;
+				}
+				break;
 			}
 			SAFE_DELETE(m_imeDevice);
 		}
