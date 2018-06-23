@@ -41,7 +41,7 @@ private:
 	IMEUsage m_imeUsage;
 
 private:
-	void UpdateMouseUV();
+	bool UpdateMouseUV();
 
 	bool RegistTexture(const std::filesystem::path& path);
 	void SetDefaultCamera();

@@ -13,6 +13,8 @@ ASPEditor::ASPEditor(LPDIRECT3DDEVICE9 device)
 
 	, m_refTex(nullptr)
 	, m_gridInterval{ 0, 0 }
+	, m_mousePoint{ -1, -1 }
+
 
 	, m_imeDevice(nullptr)
 	, m_imeUsage(IMEUsage::_NULL)
@@ -73,7 +75,13 @@ void ASPEditor::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 void ASPEditor::Update()
 {
 	if (m_refTex)
-		UpdateMouseUV();
+	{
+		if (UpdateMouseUV())
+		{
+			cout << m_mousePoint.x << " " << m_mousePoint.y << endl;
+		}
+
+	}
 
 	//TEMP RANGE
 	{
@@ -163,12 +171,27 @@ void ASPEditor::Render()
 				SingletonInstance(SimpleDrawer)->DrawLineX(m_device, D3DXCOLOR(1, 1, 1, 0.5f));
 			}
 		}
+
+		//크로스헤드
+		{
+			const auto& texWidth = m_refTex->info.Width;
+			const auto& texHeight = m_refTex->info.Height;
+
+			D3DXMATRIX pivotX, pivotY, sm, tm;
+			D3DXMatrixTranslation(&pivotX, -0.5f, 0, 0);
+			D3DXMatrixTranslation(&pivotY, 0, -0.5f, 0);
+			D3DXMatrixScaling(&sm, 3, 3, 3);
+			D3DXMatrixTranslation(&tm, (int)texWidth * -0.5f + m_mousePoint.x, (int)texHeight * 0.5f - m_mousePoint.y, 0);
+			m_device->SetTransform(D3DTS_WORLD, &(pivotX * sm * tm));	SingletonInstance(SimpleDrawer)->DrawLineX(m_device, D3DXCOLOR(1, 0, 0, 1));
+			m_device->SetTransform(D3DTS_WORLD, &(pivotY * sm * tm));	SingletonInstance(SimpleDrawer)->DrawLineY(m_device, D3DXCOLOR(1, 0, 0, 1));
+
+		}
 	}
 }
 
 
 
-void ASPEditor::UpdateMouseUV()
+bool ASPEditor::UpdateMouseUV()
 {
 	D3DXVECTOR3 rayPos, rayDir;
 	{
@@ -200,7 +223,17 @@ void ASPEditor::UpdateMouseUV()
 		v = 1 - v;
 	}
 	else
+	{
 		m_mousePoint.x = m_mousePoint.y = -1;
+		return IsFailed;
+	}
+
+	const auto& texWidth = m_refTex->info.Width;
+	const auto& texHeight = m_refTex->info.Height;
+	
+	m_mousePoint.x = u * texWidth + 0.5f;
+	m_mousePoint.y = v * texHeight + 0.5f;
+	return IsSucceeded;
 }
 
 
