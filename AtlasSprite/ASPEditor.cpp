@@ -15,6 +15,7 @@ ASPEditor::ASPEditor(LPDIRECT3DDEVICE9 device)
 	, m_gridInterval{ 0, 0 }
 	, m_mousePoint{ -1, -1 }
 
+	, m_asp(nullptr)
 
 	, m_imeDevice(nullptr)
 	, m_imeUsage(IMEUsage::_NULL)
@@ -78,17 +79,36 @@ void ASPEditor::Update()
 	{
 		if (UpdateMouseUV())
 		{
-			cout << m_mousePoint.x << " " << m_mousePoint.y << endl;
 		}
 
 	}
 
 	//TEMP RANGE
 	{
-		if (g_inputDevice.IsKeyDown(VK_NUMPAD7))
-			cout << "Grid Interval\n- " << m_gridInterval.x << "\n- " << m_gridInterval.y << endl;
+		if (g_inputDevice.IsKeyDown(VK_NUMPAD7))	cout << "Grid Interval\n- " << m_gridInterval.x << "\n- " << m_gridInterval.y << endl;
+		if (g_inputDevice.IsKeyDown(VK_NUMPAD8))	cout << "Mouse Point\n- " << m_mousePoint.x << "\n- " << m_mousePoint.y << endl;
+		if (g_inputDevice.IsKeyDown(VK_NUMPAD9))
+			m_asp ?
+				cout << "ASP area\n- " << m_asp->minU << "\n- " << m_asp->minV << "\n- " << m_asp->maxU << "\n- " << m_asp->maxV << endl :
+				cout << "ASP Not Found" << endl;
 	}
 
+	if (m_mousePoint.x != -1)
+	{
+		auto NewASP = [this]() { if (!m_asp) m_asp = new ASP; };
+		if (g_inputDevice.IsKeyPressed(VK_LBUTTON))
+		{
+			NewASP();
+			m_asp->minU = m_mousePoint.x;	if (m_asp->minU > m_asp->maxU) m_asp->minU = m_asp->maxU;
+			m_asp->minV = m_mousePoint.y;	if (m_asp->minV > m_asp->maxV) m_asp->minV = m_asp->maxV;
+		}
+		if (g_inputDevice.IsKeyPressed(VK_RBUTTON))
+		{
+			NewASP();
+			m_asp->maxU = m_mousePoint.x;	if (m_asp->maxU < m_asp->minU) m_asp->maxU = m_asp->minU;
+			m_asp->maxV = m_mousePoint.y;	if (m_asp->maxV < m_asp->minV) m_asp->maxV = m_asp->minV;
+		}
+	}
 
 
 
@@ -126,8 +146,11 @@ void ASPEditor::Render()
 
 	//텍스쳐 렌더
 	{
+		const auto& texWidth = m_refTex->info.Width;
+		const auto& texHeight = m_refTex->info.Height;
+
 		D3DXMATRIX w;
-		D3DXMatrixScaling(&w, m_refTex->info.Width, m_refTex->info.Height, 1);
+		D3DXMatrixScaling(&w, texWidth, texHeight, 1);
 		m_device->SetTransform(D3DTS_WORLD, &w);
 
 		//텍스쳐
@@ -148,8 +171,8 @@ void ASPEditor::Render()
 			{
 				D3DXMATRIX tm;
 				D3DXMatrixTranslation(&tm,
-					(int)m_refTex->info.Width * -0.5f + i,
-					(int)m_refTex->info.Height * -0.5f,
+					(int)texWidth * -0.5f + i,
+					(int)texHeight * -0.5f,
 					0);
 				m_device->SetTransform(D3DTS_WORLD, &(sm * tm));
 				SingletonInstance(SimpleDrawer)->DrawLineY(m_device, D3DXCOLOR(1, 1, 1, 0.5f));
@@ -164,19 +187,28 @@ void ASPEditor::Render()
 			{
 				D3DXMATRIX tm;
 				D3DXMatrixTranslation(&tm,
-					(int)m_refTex->info.Width * -0.5f,
-					(int)m_refTex->info.Height * 0.5f - i,
+					(int)texWidth * -0.5f,
+					(int)texHeight * 0.5f - i,
 					0);
 				m_device->SetTransform(D3DTS_WORLD, &(sm * tm));
 				SingletonInstance(SimpleDrawer)->DrawLineX(m_device, D3DXCOLOR(1, 1, 1, 0.5f));
 			}
 		}
 
-		//크로스헤드
+		//ASP Area
+		if (m_asp)
 		{
-			const auto& texWidth = m_refTex->info.Width;
-			const auto& texHeight = m_refTex->info.Height;
+			D3DXMATRIX pivot, sm, tm;
+			D3DXMatrixTranslation(&pivot, 0.5f, -0.5f, 0);
+			D3DXMatrixScaling(&sm, m_asp->maxU - m_asp->minU, m_asp->maxV - m_asp->minV, 1);
+			D3DXMatrixTranslation(&tm, (int)texWidth * -0.5f + m_asp->minU, (int)texHeight * 0.5f - m_asp->minV, 0);
+			m_device->SetTransform(D3DTS_WORLD, &(pivot * sm * tm));
+			SingletonInstance(SimpleDrawer)->DrawFrame(m_device, D3DXCOLOR(1, 0, 1, 1));
+		}
 
+		//크로스헤드
+		if (m_mousePoint.x != -1)
+		{
 			D3DXMATRIX pivotX, pivotY, sm, tm;
 			D3DXMatrixTranslation(&pivotX, -0.5f, 0, 0);
 			D3DXMatrixTranslation(&pivotY, 0, -0.5f, 0);
@@ -184,7 +216,6 @@ void ASPEditor::Render()
 			D3DXMatrixTranslation(&tm, (int)texWidth * -0.5f + m_mousePoint.x, (int)texHeight * 0.5f - m_mousePoint.y, 0);
 			m_device->SetTransform(D3DTS_WORLD, &(pivotX * sm * tm));	SingletonInstance(SimpleDrawer)->DrawLineX(m_device, D3DXCOLOR(1, 0, 0, 1));
 			m_device->SetTransform(D3DTS_WORLD, &(pivotY * sm * tm));	SingletonInstance(SimpleDrawer)->DrawLineY(m_device, D3DXCOLOR(1, 0, 0, 1));
-
 		}
 	}
 }

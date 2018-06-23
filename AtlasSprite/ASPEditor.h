@@ -18,6 +18,7 @@
 #pragma comment (lib, "C:/.Arroria/Arroria SDK/IMEDevice/lib/IMEDeviceD.lib")
 #endif
 
+struct ASP;
 struct ASPE_RefTex;
 class ASPEditor
 {
@@ -36,6 +37,7 @@ private:
 	POINT m_gridInterval;
 	POINT m_mousePoint;
 
+	ASP* m_asp;
 
 	IMEDevice* m_imeDevice;
 	IMEUsage m_imeUsage;
@@ -64,4 +66,14 @@ struct ASPE_RefTex
 	D3DXIMAGE_INFO info;
 	std::filesystem::path path;
 	ASPE_RefTex() : texture(nullptr), path() { ZeroMemory(&info, sizeof(D3DXIMAGE_INFO)); }
+};
+
+struct ASP
+{
+	size_t minU;
+	size_t minV;
+	size_t maxU;
+	size_t maxV;
+	std::wstring name;
+	ASP() : minU(NULL), minV(NULL), maxU(NULL), maxV(NULL) {}
 };
