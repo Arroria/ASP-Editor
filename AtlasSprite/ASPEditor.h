@@ -36,7 +36,8 @@ private:
 
 	ASPEUI_GridInfo* m_uiGrid;
 	ASPEUI_ASPInfo* m_uiASP;
-
+	ASPEUI_ASPListInfo* m_uiASPList;
+	
 
 	ASPE_RefTex* m_refTex;
 	POINT m_gridInterval;
@@ -116,3 +117,20 @@ public:
 	ASPEUI_ASPInfo(LPDIRECT3DDEVICE9 device);
 	~ASPEUI_ASPInfo();
 };
+
+class ASPEUI_ASPListInfo
+{
+private:
+	const LPDIRECT3DDEVICE9 m_device;
+
+	//LPDIRECT3DTEXTURE9 m_renderTarget;
+	LPD3DXFONT m_font;
+
+public:
+	void Render(const std::list<ASP*>& aspList);
+
+public:
+	ASPEUI_ASPListInfo(LPDIRECT3DDEVICE9 device);
+	~ASPEUI_ASPListInfo();
+};
+

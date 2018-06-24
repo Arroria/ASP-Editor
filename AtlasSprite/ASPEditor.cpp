@@ -31,6 +31,7 @@ ASPEditor::ASPEditor(LPDIRECT3DDEVICE9 device)
 
 	, m_uiGrid(new ASPEUI_GridInfo(device))
 	, m_uiASP(new ASPEUI_ASPInfo(device))
+	, m_uiASPList(new ASPEUI_ASPListInfo(device))
 
 	
 	, m_refTex(nullptr)
@@ -284,6 +285,7 @@ void ASPEditor::Render()
 	m_uiGrid->Render(m_gridInterval);
 	if (m_asp)
 		m_uiASP->Render(*m_asp);
+	m_uiASPList->Render(m_aspList);
 }
 
 
@@ -405,10 +407,8 @@ void ASPEUI_GridInfo::Render(const POINT & gridInterval)
 
 	RECT rc;
 	SetRect(&rc,
-		50,
-		50,
-		50,
-		50);
+		50, 50,
+		50, 50);
 
 	m_font->DrawTextW(g_sprtie, L"Grid Interval"										, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
 	m_font->DrawTextW(g_sprtie, (L" - X : " + std::to_wstring(gridInterval.x)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
@@ -440,10 +440,8 @@ void ASPEUI_ASPInfo::Render(const ASP& asp)
 
 	RECT rc;
 	SetRect(&rc,
-		50,
-		50,
-		50,
-		50);
+		50, 50,
+		50, 50);
 
 	rc.top = rc.bottom += 100;
 	m_font->DrawTextW(g_sprtie, L"ASP Information"									, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
@@ -451,6 +449,45 @@ void ASPEUI_ASPInfo::Render(const ASP& asp)
 	m_font->DrawTextW(g_sprtie, (L" - min V : " + std::to_wstring(asp.minV)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
 	m_font->DrawTextW(g_sprtie, (L" - max U : " + std::to_wstring(asp.maxU)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
 	m_font->DrawTextW(g_sprtie, (L" - max V : " + std::to_wstring(asp.maxV)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+
+
+
+	g_sprtie->End();
+}
+
+
+
+
+
+ASPEUI_ASPListInfo::ASPEUI_ASPListInfo(LPDIRECT3DDEVICE9 device)
+	: m_device(device)
+{
+	D3DXCreateFontW(m_device, 20, 0, FW_DONTCARE, 0, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, nullptr, &m_font);
+}
+ASPEUI_ASPListInfo::~ASPEUI_ASPListInfo()
+{
+}
+
+
+
+void ASPEUI_ASPListInfo::Render(const std::list<ASP*>& aspList)
+{
+	g_sprtie->Begin(D3DXSPRITE_ALPHABLEND);
+
+	RECT rc;
+	SetRect(&rc,
+		1280 - 50, 50,
+		1280 - 50, 50);
+
+	for (auto& pAsp : aspList)
+	{
+		ASP& asp = *pAsp;
+		m_font->DrawTextW(g_sprtie, (L"ASP : " + asp.name).data()						, -1, &rc, DT_RIGHT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		m_font->DrawTextW(g_sprtie, (L" - min U : " + std::to_wstring(asp.minU)).data()	, -1, &rc, DT_RIGHT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		m_font->DrawTextW(g_sprtie, (L" - min V : " + std::to_wstring(asp.minV)).data()	, -1, &rc, DT_RIGHT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		m_font->DrawTextW(g_sprtie, (L" - max U : " + std::to_wstring(asp.maxU)).data()	, -1, &rc, DT_RIGHT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		m_font->DrawTextW(g_sprtie, (L" - max V : " + std::to_wstring(asp.maxV)).data()	, -1, &rc, DT_RIGHT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+	}
 
 
 
