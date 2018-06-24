@@ -24,6 +24,8 @@ bool MainLoop::Initialize()
 	DragAcceptFiles(g_processManager->GetWndInfo()->hWnd, true);
 
 
+	D3DXCreateSprite(DEVICE, &g_sprtie);
+
 
 	cout.imbue(std::locale("kor"));
 	wcout.imbue(std::locale("kor"));

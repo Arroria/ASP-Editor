@@ -20,6 +20,10 @@
 
 struct ASP;
 struct ASPE_RefTex;
+
+class ASPEUI_GridInfo;
+
+
 class ASPEditor
 {
 	enum class IMEUsage;
@@ -27,6 +31,9 @@ class ASPEditor
 private:
 	const LPDIRECT3DDEVICE9 m_device;
 	D3DXVECTOR3 m_rayCastPlane[4];
+
+	ASPEUI_GridInfo* m_uiGrid;
+
 
 	ASPE_RefTex* m_refTex;
 	POINT m_gridInterval;
@@ -72,4 +79,21 @@ struct ASP
 	size_t maxV;
 	std::wstring name;
 	ASP() : minU(NULL), minV(NULL), maxU(NULL), maxV(NULL) {}
+};
+
+
+class ASPEUI_GridInfo
+{
+private:
+	const LPDIRECT3DDEVICE9 m_device;
+
+	//LPDIRECT3DTEXTURE9 m_renderTarget;
+	LPD3DXFONT m_font;
+
+public:
+	void Render(const POINT& gridInterval);
+
+public:
+	ASPEUI_GridInfo(LPDIRECT3DDEVICE9 device);
+	~ASPEUI_GridInfo();
 };

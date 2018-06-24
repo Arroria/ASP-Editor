@@ -29,6 +29,9 @@ enum class ASPEditor::IMEUsage
 ASPEditor::ASPEditor(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
 
+	, m_uiGrid(new ASPEUI_GridInfo(device))
+
+
 	, m_refTex(nullptr)
 	, m_gridInterval{ 0, 0 }
 	, m_mousePoint{ -1, -1 }
@@ -275,6 +278,9 @@ void ASPEditor::Render()
 			m_device->SetTransform(D3DTS_WORLD, &(pivotY * sm * tm));	SingletonInstance(SimpleDrawer)->DrawLineY(m_device, D3DXCOLOR(1, 0, 0, 1));
 		}
 	}
+
+
+	m_uiGrid->Render(m_gridInterval);
 }
 
 
@@ -370,4 +376,42 @@ void ASPEditor::CreateRaycastPlane()
 	m_rayCastPlane[1] = D3DXVECTOR3((int)m_refTex->info.Width * +0.5f, (int)m_refTex->info.Height * +0.5f, 0);
 	m_rayCastPlane[2] = D3DXVECTOR3((int)m_refTex->info.Width * -0.5f, (int)m_refTex->info.Height * -0.5f, 0);
 	m_rayCastPlane[3] = D3DXVECTOR3((int)m_refTex->info.Width * +0.5f, (int)m_refTex->info.Height * -0.5f, 0);
+}
+
+
+
+
+constexpr size_t UI_SIZE_X = 200;
+constexpr size_t UI_SIZE_Y = 100;
+ASPEUI_GridInfo::ASPEUI_GridInfo(LPDIRECT3DDEVICE9 device)
+	: m_device(device)
+{
+	//D3DXCreateTexture(m_device, UI_SIZE_X, UI_SIZE_Y, NULL, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &);
+
+	D3DXCreateFontW(m_device, 20, 0, FW_DONTCARE, 0, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, nullptr, &m_font);
+}
+ASPEUI_GridInfo::~ASPEUI_GridInfo()
+{
+}
+
+
+
+void ASPEUI_GridInfo::Render(const POINT & gridInterval)
+{
+	g_sprtie->Begin(D3DXSPRITE_ALPHABLEND);
+
+	RECT rc;
+	SetRect(&rc,
+		50,
+		50,
+		50,
+		50);
+
+	m_font->DrawTextW(g_sprtie, L"Grid Interval"										, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+	m_font->DrawTextW(g_sprtie, (L" - X : " + std::to_wstring(gridInterval.x)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+	m_font->DrawTextW(g_sprtie, (L" - Y : " + std::to_wstring(gridInterval.y)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+
+
+
+	g_sprtie->End();
 }
