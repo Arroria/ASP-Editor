@@ -30,8 +30,9 @@ ASPEditor::ASPEditor(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
 
 	, m_uiGrid(new ASPEUI_GridInfo(device))
+	, m_uiASP(new ASPEUI_ASPInfo(device))
 
-
+	
 	, m_refTex(nullptr)
 	, m_gridInterval{ 0, 0 }
 	, m_mousePoint{ -1, -1 }
@@ -281,6 +282,8 @@ void ASPEditor::Render()
 
 
 	m_uiGrid->Render(m_gridInterval);
+	if (m_asp)
+		m_uiASP->Render(*m_asp);
 }
 
 
@@ -410,6 +413,44 @@ void ASPEUI_GridInfo::Render(const POINT & gridInterval)
 	m_font->DrawTextW(g_sprtie, L"Grid Interval"										, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
 	m_font->DrawTextW(g_sprtie, (L" - X : " + std::to_wstring(gridInterval.x)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
 	m_font->DrawTextW(g_sprtie, (L" - Y : " + std::to_wstring(gridInterval.y)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+
+
+
+	g_sprtie->End();
+}
+
+
+
+
+
+ASPEUI_ASPInfo::ASPEUI_ASPInfo(LPDIRECT3DDEVICE9 device)
+	: m_device(device)
+{
+	D3DXCreateFontW(m_device, 20, 0, FW_DONTCARE, 0, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, nullptr, &m_font);
+}
+ASPEUI_ASPInfo::~ASPEUI_ASPInfo()
+{
+}
+
+
+
+void ASPEUI_ASPInfo::Render(const ASP& asp)
+{
+	g_sprtie->Begin(D3DXSPRITE_ALPHABLEND);
+
+	RECT rc;
+	SetRect(&rc,
+		50,
+		50,
+		50,
+		50);
+
+	rc.top = rc.bottom += 100;
+	m_font->DrawTextW(g_sprtie, L"ASP Information"									, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+	m_font->DrawTextW(g_sprtie, (L" - min U : " + std::to_wstring(asp.minU)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+	m_font->DrawTextW(g_sprtie, (L" - min V : " + std::to_wstring(asp.minV)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+	m_font->DrawTextW(g_sprtie, (L" - max U : " + std::to_wstring(asp.maxU)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+	m_font->DrawTextW(g_sprtie, (L" - max V : " + std::to_wstring(asp.maxV)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
 
 
 

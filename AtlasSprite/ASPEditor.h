@@ -22,6 +22,8 @@ struct ASP;
 struct ASPE_RefTex;
 
 class ASPEUI_GridInfo;
+class ASPEUI_ASPInfo;
+class ASPEUI_ASPListInfo;
 
 
 class ASPEditor
@@ -33,6 +35,7 @@ private:
 	D3DXVECTOR3 m_rayCastPlane[4];
 
 	ASPEUI_GridInfo* m_uiGrid;
+	ASPEUI_ASPInfo* m_uiASP;
 
 
 	ASPE_RefTex* m_refTex;
@@ -96,4 +99,20 @@ public:
 public:
 	ASPEUI_GridInfo(LPDIRECT3DDEVICE9 device);
 	~ASPEUI_GridInfo();
+};
+
+class ASPEUI_ASPInfo
+{
+private:
+	const LPDIRECT3DDEVICE9 m_device;
+
+	//LPDIRECT3DTEXTURE9 m_renderTarget;
+	LPD3DXFONT m_font;
+
+public:
+	void Render(const ASP& asp);
+
+public:
+	ASPEUI_ASPInfo(LPDIRECT3DDEVICE9 device);
+	~ASPEUI_ASPInfo();
 };
