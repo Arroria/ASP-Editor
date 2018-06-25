@@ -286,6 +286,14 @@ void ASPEditor::Render()
 	if (m_asp)
 		m_uiASP->Render(*m_asp);
 	m_uiASPList->Render(m_aspList);
+
+
+	D3DXMATRIX iden;
+	D3DXMatrixIdentity(&iden);
+	m_device->SetTransform(D3DTS_WORLD, &iden);
+	g_sprtie->Begin(D3DXSPRITE_ALPHABLEND);
+	g_sprtie->Draw(m_uiGrid->GetTexture(), nullptr, nullptr, nullptr, D3DXCOLOR(1, 1, 1, 1));
+	g_sprtie->End();
 }
 
 
@@ -390,33 +398,46 @@ constexpr size_t UI_SIZE_X = 200;
 constexpr size_t UI_SIZE_Y = 100;
 ASPEUI_GridInfo::ASPEUI_GridInfo(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
+
+	, m_renderTarget(nullptr)
 {
-	//D3DXCreateTexture(m_device, UI_SIZE_X, UI_SIZE_Y, NULL, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &);
+	D3DXCreateTexture(m_device, UI_SIZE_X, UI_SIZE_Y, NULL, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_renderTarget);
 
 	D3DXCreateFontW(m_device, 20, 0, FW_DONTCARE, 0, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, nullptr, &m_font);
 }
 ASPEUI_GridInfo::~ASPEUI_GridInfo()
 {
+	m_renderTarget->Release();
 }
 
 
 
 void ASPEUI_GridInfo::Render(const POINT & gridInterval)
 {
-	g_sprtie->Begin(D3DXSPRITE_ALPHABLEND);
+	LPDIRECT3DSURFACE9 mySurface;
+	m_renderTarget->GetSurfaceLevel(0, &mySurface);
+	LPDIRECT3DSURFACE9 mainRenderTarget;
+	m_device->GetRenderTarget(0, &mainRenderTarget);
+	m_device->SetRenderTarget(0, mySurface);
+	{
+		g_sprtie->Begin(D3DXSPRITE_ALPHABLEND);
 
-	RECT rc;
-	SetRect(&rc,
-		50, 50,
-		50, 50);
+		RECT rc;
+		SetRect(&rc,
+			50, 50,
+			50, 50);
 
-	m_font->DrawTextW(g_sprtie, L"Grid Interval"										, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
-	m_font->DrawTextW(g_sprtie, (L" - X : " + std::to_wstring(gridInterval.x)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
-	m_font->DrawTextW(g_sprtie, (L" - Y : " + std::to_wstring(gridInterval.y)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		m_font->DrawTextW(g_sprtie, L"Grid Interval"										, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		m_font->DrawTextW(g_sprtie, (L" - X : " + std::to_wstring(gridInterval.x)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		m_font->DrawTextW(g_sprtie, (L" - Y : " + std::to_wstring(gridInterval.y)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
 
 
 
-	g_sprtie->End();
+		g_sprtie->End();
+	}
+	m_device->SetRenderTarget(0, mainRenderTarget);
+	mainRenderTarget->Release();
+	mySurface->Release();
 }
 
 

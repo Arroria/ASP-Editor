@@ -91,11 +91,12 @@ class ASPEUI_GridInfo
 private:
 	const LPDIRECT3DDEVICE9 m_device;
 
-	//LPDIRECT3DTEXTURE9 m_renderTarget;
+	LPDIRECT3DTEXTURE9 m_renderTarget;
 	LPD3DXFONT m_font;
 
 public:
 	void Render(const POINT& gridInterval);
+	LPDIRECT3DTEXTURE9 GetTexture() { return m_renderTarget; }
 
 public:
 	ASPEUI_GridInfo(LPDIRECT3DDEVICE9 device);
