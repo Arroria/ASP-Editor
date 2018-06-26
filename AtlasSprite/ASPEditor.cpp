@@ -22,6 +22,8 @@ enum class ASPEditor::IMEUsage
 	ASPMaxV,
 
 	RegistASP,
+
+	CreateASPFile,
 };
 
 
@@ -104,28 +106,6 @@ void ASPEditor::Update()
 			;
 	}
 
-	//TEMP RANGE
-	{
-		if (g_inputDevice.IsKeyDown(VK_F9))		cout << "Grid Interval\n- " << m_gridInterval.x << "\n- " << m_gridInterval.y << endl;
-		if (g_inputDevice.IsKeyDown(VK_F10))	cout << "Mouse Point\n- " << m_mousePoint.x << "\n- " << m_mousePoint.y << endl;
-		if (g_inputDevice.IsKeyDown(VK_F11))
-		{
-			if (g_inputDevice.IsKeyNone(VK_CONTROL))
-				m_asp ?
-					cout << "ASP area\n- " << m_asp->minU << "\n- " << m_asp->minV << "\n- " << m_asp->maxU << "\n- " << m_asp->maxV << endl :
-					cout << "ASP Not Found" << endl;
-			else
-			{
-				cout << "ASP List\n{" << endl;
-				for (auto& asp : m_aspList)
-					m_asp ?
-					wcout << "ASP : " << asp->name << "\n- " << asp->minU << "\n- " << asp->minV << "\n- " << asp->maxU << "\n- " << asp->maxV << endl :
-					wcout << "ASP Not Found" << endl;
-				cout << "}" << endl;
-			}
-		}
-	}
-
 	if (m_mousePoint.x != -1)
 	{
 		auto NewASP = [this]()
@@ -169,7 +149,9 @@ void ASPEditor::Update()
 		if (g_inputDevice.IsKeyDown(VK_F3))	IMEDeviceCreate(IMEUsage::ASPMaxU);
 		if (g_inputDevice.IsKeyDown(VK_F4))	IMEDeviceCreate(IMEUsage::ASPMaxV);
 
-		if (g_inputDevice.IsKeyDown(VK_F8))	IMEDeviceCreate(IMEUsage::RegistASP);
+		if (g_inputDevice.IsKeyDown(VK_F7))	IMEDeviceCreate(IMEUsage::RegistASP);
+
+		if (g_inputDevice.IsKeyDown(VK_F8))	IMEDeviceCreate(IMEUsage::CreateASPFile);
 	}
 	else
 	{
@@ -192,6 +174,28 @@ void ASPEditor::Update()
 					m_aspList.push_back(m_asp);
 					m_asp = nullptr;
 				}
+				break;
+			
+			case IMEUsage::CreateASPFile:
+			{
+				std::wfstream aspFile;
+				std::filesystem::path path(m_imeDevice->GetString());
+				path.replace_extension(L".asp");
+				aspFile.imbue(std::locale("kor"));
+				aspFile.open(path, std::ios::out | std::ios::trunc);
+
+				for (auto& aspIter : m_aspList)
+				{
+					auto& asp = *aspIter;
+					aspFile << asp.name << L" " <<
+						asp.minU << L" " <<
+						asp.minV << L" " <<
+						asp.maxU << L" " <<
+						asp.maxV << endl;
+				}
+
+				aspFile.close();
+			}
 				break;
 			}
 			SAFE_DELETE(m_imeDevice);
