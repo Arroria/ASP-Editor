@@ -290,9 +290,13 @@ void ASPEditor::Render()
 
 	D3DXMATRIX iden;
 	D3DXMatrixIdentity(&iden);
-	m_device->SetTransform(D3DTS_WORLD, &iden);
 	g_sprtie->Begin(D3DXSPRITE_ALPHABLEND);
-	g_sprtie->Draw(m_uiGrid->GetTexture(), nullptr, nullptr, nullptr, D3DXCOLOR(1, 1, 1, 1));
+	g_sprtie->SetTransform(&iden);
+	D3DXMATRIX tm = iden;
+	D3DXMatrixTranslation(&tm, 30, 30, 0);	g_sprtie->SetTransform(&tm);	g_sprtie->Draw(m_uiGrid->GetTexture(), nullptr, nullptr, nullptr, D3DXCOLOR(1, 1, 1, 1));
+	D3DXMatrixTranslation(&tm, 30, 230, 0);	g_sprtie->SetTransform(&tm);	g_sprtie->Draw(m_uiASP->GetTexture(), nullptr, nullptr, nullptr, D3DXCOLOR(1, 1, 1, 1));
+	D3DXMatrixTranslation(&tm, 1280 - 230, 30, 0);	g_sprtie->SetTransform(&tm);	g_sprtie->Draw(m_uiASPList->GetTexture(), nullptr, nullptr, nullptr, D3DXCOLOR(1, 1, 1, 1));
+	
 	g_sprtie->End();
 }
 
@@ -394,13 +398,13 @@ void ASPEditor::CreateRaycastPlane()
 
 
 
-constexpr size_t UI_SIZE_X = 200;
-constexpr size_t UI_SIZE_Y = 100;
 ASPEUI_GridInfo::ASPEUI_GridInfo(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
 
 	, m_renderTarget(nullptr)
 {
+	constexpr size_t UI_SIZE_X = 200;
+	constexpr size_t UI_SIZE_Y = 100;
 	D3DXCreateTexture(m_device, UI_SIZE_X, UI_SIZE_Y, NULL, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_renderTarget);
 
 	D3DXCreateFontW(m_device, 20, 0, FW_DONTCARE, 0, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, nullptr, &m_font);
@@ -419,13 +423,12 @@ void ASPEUI_GridInfo::Render(const POINT & gridInterval)
 	LPDIRECT3DSURFACE9 mainRenderTarget;
 	m_device->GetRenderTarget(0, &mainRenderTarget);
 	m_device->SetRenderTarget(0, mySurface);
+	m_device->Clear(NULL, nullptr, D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 0, NULL);
+	g_sprtie->SetTransform(&g_identityMatrix);
 	{
 		g_sprtie->Begin(D3DXSPRITE_ALPHABLEND);
 
-		RECT rc;
-		SetRect(&rc,
-			50, 50,
-			50, 50);
+		RECT rc = { NULL };
 
 		m_font->DrawTextW(g_sprtie, L"Grid Interval"										, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
 		m_font->DrawTextW(g_sprtie, (L" - X : " + std::to_wstring(gridInterval.x)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
@@ -446,7 +449,13 @@ void ASPEUI_GridInfo::Render(const POINT & gridInterval)
 
 ASPEUI_ASPInfo::ASPEUI_ASPInfo(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
+
+	, m_renderTarget(nullptr)
 {
+	constexpr size_t UI_SIZE_X = 200;
+	constexpr size_t UI_SIZE_Y = 200;
+	D3DXCreateTexture(m_device, UI_SIZE_X, UI_SIZE_Y, NULL, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_renderTarget);
+
 	D3DXCreateFontW(m_device, 20, 0, FW_DONTCARE, 0, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, nullptr, &m_font);
 }
 ASPEUI_ASPInfo::~ASPEUI_ASPInfo()
@@ -457,23 +466,31 @@ ASPEUI_ASPInfo::~ASPEUI_ASPInfo()
 
 void ASPEUI_ASPInfo::Render(const ASP& asp)
 {
-	g_sprtie->Begin(D3DXSPRITE_ALPHABLEND);
+	LPDIRECT3DSURFACE9 mySurface;
+	m_renderTarget->GetSurfaceLevel(0, &mySurface);
+	LPDIRECT3DSURFACE9 mainRenderTarget;
+	m_device->GetRenderTarget(0, &mainRenderTarget);
+	m_device->SetRenderTarget(0, mySurface);
+	m_device->Clear(NULL, nullptr, D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 0, NULL);
+	g_sprtie->SetTransform(&g_identityMatrix);
+	{
+		g_sprtie->Begin(D3DXSPRITE_ALPHABLEND);
 
-	RECT rc;
-	SetRect(&rc,
-		50, 50,
-		50, 50);
-
-	rc.top = rc.bottom += 100;
-	m_font->DrawTextW(g_sprtie, L"ASP Information"									, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
-	m_font->DrawTextW(g_sprtie, (L" - min U : " + std::to_wstring(asp.minU)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
-	m_font->DrawTextW(g_sprtie, (L" - min V : " + std::to_wstring(asp.minV)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
-	m_font->DrawTextW(g_sprtie, (L" - max U : " + std::to_wstring(asp.maxU)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
-	m_font->DrawTextW(g_sprtie, (L" - max V : " + std::to_wstring(asp.maxV)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		RECT rc = { NULL };
+		
+		m_font->DrawTextW(g_sprtie, L"ASP Information"									, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		m_font->DrawTextW(g_sprtie, (L" - min U : " + std::to_wstring(asp.minU)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		m_font->DrawTextW(g_sprtie, (L" - min V : " + std::to_wstring(asp.minV)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		m_font->DrawTextW(g_sprtie, (L" - max U : " + std::to_wstring(asp.maxU)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		m_font->DrawTextW(g_sprtie, (L" - max V : " + std::to_wstring(asp.maxV)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
 
 
 
-	g_sprtie->End();
+		g_sprtie->End();
+	}
+	m_device->SetRenderTarget(0, mainRenderTarget);
+	mainRenderTarget->Release();
+	mySurface->Release();
 }
 
 
@@ -482,7 +499,13 @@ void ASPEUI_ASPInfo::Render(const ASP& asp)
 
 ASPEUI_ASPListInfo::ASPEUI_ASPListInfo(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
+
+	, m_renderTarget(nullptr)
 {
+	constexpr size_t UI_SIZE_X = 200;
+	constexpr size_t UI_SIZE_Y = 960;
+	D3DXCreateTexture(m_device, UI_SIZE_X, UI_SIZE_Y, NULL, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_renderTarget);
+
 	D3DXCreateFontW(m_device, 20, 0, FW_DONTCARE, 0, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, nullptr, &m_font);
 }
 ASPEUI_ASPListInfo::~ASPEUI_ASPListInfo()
@@ -493,24 +516,33 @@ ASPEUI_ASPListInfo::~ASPEUI_ASPListInfo()
 
 void ASPEUI_ASPListInfo::Render(const std::list<ASP*>& aspList)
 {
-	g_sprtie->Begin(D3DXSPRITE_ALPHABLEND);
-
-	RECT rc;
-	SetRect(&rc,
-		1280 - 50, 50,
-		1280 - 50, 50);
-
-	for (auto& pAsp : aspList)
+	LPDIRECT3DSURFACE9 mySurface;
+	m_renderTarget->GetSurfaceLevel(0, &mySurface);
+	LPDIRECT3DSURFACE9 mainRenderTarget;
+	m_device->GetRenderTarget(0, &mainRenderTarget);
+	m_device->SetRenderTarget(0, mySurface);
+	m_device->Clear(NULL, nullptr, D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000, 0, NULL);
+	g_sprtie->SetTransform(&g_identityMatrix);
 	{
-		ASP& asp = *pAsp;
-		m_font->DrawTextW(g_sprtie, (L"ASP : " + asp.name).data()						, -1, &rc, DT_RIGHT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
-		m_font->DrawTextW(g_sprtie, (L" - min U : " + std::to_wstring(asp.minU)).data()	, -1, &rc, DT_RIGHT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
-		m_font->DrawTextW(g_sprtie, (L" - min V : " + std::to_wstring(asp.minV)).data()	, -1, &rc, DT_RIGHT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
-		m_font->DrawTextW(g_sprtie, (L" - max U : " + std::to_wstring(asp.maxU)).data()	, -1, &rc, DT_RIGHT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
-		m_font->DrawTextW(g_sprtie, (L" - max V : " + std::to_wstring(asp.maxV)).data()	, -1, &rc, DT_RIGHT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		g_sprtie->Begin(D3DXSPRITE_ALPHABLEND);
+
+		RECT rc = { NULL };
+		
+		for (auto& pAsp : aspList)
+		{
+			ASP& asp = *pAsp;
+			m_font->DrawTextW(g_sprtie, (L"ASP : " + asp.name).data()						, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+			m_font->DrawTextW(g_sprtie, (L" - min U : " + std::to_wstring(asp.minU)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+			m_font->DrawTextW(g_sprtie, (L" - min V : " + std::to_wstring(asp.minV)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+			m_font->DrawTextW(g_sprtie, (L" - max U : " + std::to_wstring(asp.maxU)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+			m_font->DrawTextW(g_sprtie, (L" - max V : " + std::to_wstring(asp.maxV)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
+		}
+
+
+
+		g_sprtie->End();
 	}
-
-
-
-	g_sprtie->End();
+	m_device->SetRenderTarget(0, mainRenderTarget);
+	mainRenderTarget->Release();
+	mySurface->Release();
 }

@@ -108,11 +108,12 @@ class ASPEUI_ASPInfo
 private:
 	const LPDIRECT3DDEVICE9 m_device;
 
-	//LPDIRECT3DTEXTURE9 m_renderTarget;
+	LPDIRECT3DTEXTURE9 m_renderTarget;
 	LPD3DXFONT m_font;
 
 public:
 	void Render(const ASP& asp);
+	LPDIRECT3DTEXTURE9 GetTexture() { return m_renderTarget; }
 
 public:
 	ASPEUI_ASPInfo(LPDIRECT3DDEVICE9 device);
@@ -124,11 +125,12 @@ class ASPEUI_ASPListInfo
 private:
 	const LPDIRECT3DDEVICE9 m_device;
 
-	//LPDIRECT3DTEXTURE9 m_renderTarget;
+	LPDIRECT3DTEXTURE9 m_renderTarget;
 	LPD3DXFONT m_font;
 
 public:
 	void Render(const std::list<ASP*>& aspList);
+	LPDIRECT3DTEXTURE9 GetTexture() { return m_renderTarget; }
 
 public:
 	ASPEUI_ASPListInfo(LPDIRECT3DDEVICE9 device);
