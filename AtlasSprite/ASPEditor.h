@@ -52,9 +52,12 @@ private:
 private:
 	bool UpdateMouseUV();
 
+	void ChangeRefTex(const wchar_t* path);
 	bool RegistTexture(const std::filesystem::path& path);
 	void SetDefaultCamera();
 	void CreateRaycastPlane();
+
+	bool OpenFileReferenceWindow(wchar_t* path, bool forSave);
 
 public:
 	void MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

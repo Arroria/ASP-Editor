@@ -2,6 +2,7 @@
 #include "ASPEditor.h"
 
 #include <Ime.h>
+#include <commdlg.h>
 
 constexpr static bool IsSucceeded = true;
 constexpr static bool IsFailed = false;
@@ -23,7 +24,7 @@ enum class ASPEditor::IMEUsage
 
 	RegistASP,
 
-	CreateASPFile,
+	CreateASPFile, // 더이상 사용되지 않음
 };
 
 
@@ -59,16 +60,6 @@ void ASPEditor::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if (m_imeDevice)
 		m_imeDevice->MsgProc(hWnd, uMsg, wParam, lParam);
 
-
-	auto ApplyPath = [this](const wchar_t* path)
-	{
-		if (RegistTexture(path))
-		{
-			SetDefaultCamera();
-			CreateRaycastPlane();
-		}
-	};
-
 	if (uMsg == WM_DROPFILES)
 	{
 		HDROP hDrop = (HDROP)wParam;
@@ -83,7 +74,7 @@ void ASPEditor::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				DragQueryFileW(hDrop, fileIndex, pathBuffer, pathSize + 1);
 
-				ApplyPath(pathBuffer);
+				ChangeRefTex(pathBuffer);
 			}
 			else //파일경로가 예상보다 큼;;
 			{
@@ -91,7 +82,7 @@ void ASPEditor::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				std::vector<wchar_t> pathBigBuffer(pathSize + 1, NULL);
 				DragQueryFileW(hDrop, fileIndex, &pathBigBuffer[0], pathSize + 1);
 
-				ApplyPath(&pathBigBuffer[0]);
+				ChangeRefTex(&pathBigBuffer[0]);
 			}
 		}
 		DragFinish(hDrop);
@@ -151,7 +142,35 @@ void ASPEditor::Update()
 
 		if (g_inputDevice.IsKeyDown(VK_F7))	IMEDeviceCreate(IMEUsage::RegistASP);
 
-		if (g_inputDevice.IsKeyDown(VK_F8))	IMEDeviceCreate(IMEUsage::CreateASPFile);
+		wchar_t path[MAX_PATH] = { NULL };
+		if (g_inputDevice.IsKeyDown(VK_F9))
+		{
+			if (OpenFileReferenceWindow(path, false))
+				ChangeRefTex(path);
+		}
+		if (g_inputDevice.IsKeyDown(VK_F10))
+		{
+			if (OpenFileReferenceWindow(path, true))
+			{
+				std::wfstream aspFile;
+				std::filesystem::path aspPath(path);
+				aspPath.replace_extension(L".asp");
+				aspFile.imbue(std::locale("kor"));
+				aspFile.open(aspPath, std::ios::out | std::ios::trunc);
+
+				for (auto& aspIter : m_aspList)
+				{
+					auto& asp = *aspIter;
+					aspFile << asp.name << L" " <<
+						asp.minU << L" " <<
+						asp.minV << L" " <<
+						asp.maxU << L" " <<
+						asp.maxV << endl;
+				}
+
+				aspFile.close();
+			}
+		}
 	}
 	else
 	{
@@ -177,6 +196,8 @@ void ASPEditor::Update()
 				break;
 			
 			case IMEUsage::CreateASPFile:
+				break;
+				//더이상 미사용됨
 			{
 				std::wfstream aspFile;
 				std::filesystem::path path(m_imeDevice->GetString());
@@ -353,6 +374,15 @@ bool ASPEditor::UpdateMouseUV()
 
 
 
+void ASPEditor::ChangeRefTex(const wchar_t * path)
+{
+	if (RegistTexture(path))
+	{
+		SetDefaultCamera();
+		CreateRaycastPlane();
+	}
+}
+
 bool ASPEditor::RegistTexture(const std::filesystem::path & path)
 {
 	ASPE_RefTex* refTex(nullptr);
@@ -397,6 +427,24 @@ void ASPEditor::CreateRaycastPlane()
 	m_rayCastPlane[1] = D3DXVECTOR3((int)m_refTex->info.Width * +0.5f, (int)m_refTex->info.Height * +0.5f, 0);
 	m_rayCastPlane[2] = D3DXVECTOR3((int)m_refTex->info.Width * -0.5f, (int)m_refTex->info.Height * -0.5f, 0);
 	m_rayCastPlane[3] = D3DXVECTOR3((int)m_refTex->info.Width * +0.5f, (int)m_refTex->info.Height * -0.5f, 0);
+}
+
+bool ASPEditor::OpenFileReferenceWindow(wchar_t* path, bool forSave)
+{
+	HWND hWnd = g_processManager->GetWndInfo()->hWnd;
+
+	OPENFILENAME OFN;
+	ZeroMemory(&OFN, sizeof(OPENFILENAME));
+	OFN.lStructSize = sizeof(OPENFILENAME);
+	OFN.hwndOwner = hWnd;
+	OFN.lpstrFilter = L"All\0*.*\0Image\0*.png;*.jpg;*.bmp\0ASP File\0*.asp";
+	OFN.lpstrFile = path;
+	OFN.nMaxFile = MAX_PATH;
+	OFN.lpstrInitialDir = L".\\";
+	
+	if (forSave ? GetSaveFileNameW(&OFN) : GetOpenFileNameW(&OFN))
+		return IsSucceeded;
+	return IsFailed;
 }
 
 
