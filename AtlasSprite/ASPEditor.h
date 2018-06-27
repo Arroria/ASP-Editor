@@ -12,12 +12,13 @@
 #endif
 
 
-struct ASP;
+
+struct ASPE_ASP;
 struct ASPE_RefTex;
 
-class ASPEUI_GridInfo;
-class ASPEUI_ASPInfo;
-class ASPEUI_ASPListInfo;
+class ASPE_UI_GridInfo;
+class ASPE_UI_ASPInfo;
+class ASPE_UI_ASPListInfo;
 
 
 class ASPEditor
@@ -28,17 +29,17 @@ private:
 	const LPDIRECT3DDEVICE9 m_device;
 	D3DXVECTOR3 m_rayCastPlane[4];
 
-	ASPEUI_GridInfo* m_uiGrid;
-	ASPEUI_ASPInfo* m_uiASP;
-	ASPEUI_ASPListInfo* m_uiASPList;
+	ASPE_UI_GridInfo* m_uiGrid;
+	ASPE_UI_ASPInfo* m_uiASP;
+	ASPE_UI_ASPListInfo* m_uiASPList;
 	
 
 	ASPE_RefTex* m_refTex;
 	POINT m_gridInterval;
 	POINT m_mousePoint;
 
-	ASP* m_asp;
-	std::list<ASP*> m_aspList;
+	ASPE_ASP* m_asp;
+	std::list<ASPE_ASP*> m_aspList;
 
 	IMEDevice* m_imeDevice;
 	IMEUsage m_imeUsage;
@@ -72,18 +73,18 @@ struct ASPE_RefTex
 	ASPE_RefTex() : texture(nullptr), path() { ZeroMemory(&info, sizeof(D3DXIMAGE_INFO)); }
 };
 
-struct ASP
+struct ASPE_ASP
 {
 	size_t minU;
 	size_t minV;
 	size_t maxU;
 	size_t maxV;
 	std::wstring name;
-	ASP() : minU(NULL), minV(NULL), maxU(NULL), maxV(NULL) {}
+	ASPE_ASP() : minU(NULL), minV(NULL), maxU(NULL), maxV(NULL) {}
 };
 
 
-class ASPEUI_GridInfo
+class ASPE_UI_GridInfo
 {
 private:
 	const LPDIRECT3DDEVICE9 m_device;
@@ -96,11 +97,11 @@ public:
 	LPDIRECT3DTEXTURE9 GetTexture() { return m_renderTarget; }
 
 public:
-	ASPEUI_GridInfo(LPDIRECT3DDEVICE9 device);
-	~ASPEUI_GridInfo();
+	ASPE_UI_GridInfo(LPDIRECT3DDEVICE9 device);
+	~ASPE_UI_GridInfo();
 };
 
-class ASPEUI_ASPInfo
+class ASPE_UI_ASPInfo
 {
 private:
 	const LPDIRECT3DDEVICE9 m_device;
@@ -109,15 +110,15 @@ private:
 	LPD3DXFONT m_font;
 
 public:
-	void Render(const ASP& asp);
+	void Render(const ASPE_ASP& asp);
 	LPDIRECT3DTEXTURE9 GetTexture() { return m_renderTarget; }
 
 public:
-	ASPEUI_ASPInfo(LPDIRECT3DDEVICE9 device);
-	~ASPEUI_ASPInfo();
+	ASPE_UI_ASPInfo(LPDIRECT3DDEVICE9 device);
+	~ASPE_UI_ASPInfo();
 };
 
-class ASPEUI_ASPListInfo
+class ASPE_UI_ASPListInfo
 {
 private:
 	const LPDIRECT3DDEVICE9 m_device;
@@ -126,11 +127,11 @@ private:
 	LPD3DXFONT m_font;
 
 public:
-	void Render(const std::list<ASP*>& aspList);
+	void Render(const std::list<ASPE_ASP*>& aspList);
 	LPDIRECT3DTEXTURE9 GetTexture() { return m_renderTarget; }
 
 public:
-	ASPEUI_ASPListInfo(LPDIRECT3DDEVICE9 device);
-	~ASPEUI_ASPListInfo();
+	ASPE_UI_ASPListInfo(LPDIRECT3DDEVICE9 device);
+	~ASPE_UI_ASPListInfo();
 };
 

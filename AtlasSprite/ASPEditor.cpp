@@ -35,9 +35,9 @@ enum class ASPEditor::IMEUsage
 ASPEditor::ASPEditor(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
 
-	, m_uiGrid(new ASPEUI_GridInfo(device))
-	, m_uiASP(new ASPEUI_ASPInfo(device))
-	, m_uiASPList(new ASPEUI_ASPListInfo(device))
+	, m_uiGrid(new ASPE_UI_GridInfo(device))
+	, m_uiASP(new ASPE_UI_ASPInfo(device))
+	, m_uiASPList(new ASPE_UI_ASPListInfo(device))
 
 	
 	, m_refTex(nullptr)
@@ -106,7 +106,7 @@ void ASPEditor::Update()
 		{
 			if (!m_asp)
 			{
-				m_asp = new ASP;
+				m_asp = new ASPE_ASP;
 				m_asp->minU = m_asp->maxU = m_mousePoint.x;
 				m_asp->minV = m_asp->maxV = m_mousePoint.y;
 			}
@@ -293,7 +293,7 @@ void ASPEditor::Render()
 			D3DXMatrixScaling(&sm, m_asp->maxU - m_asp->minU, m_asp->maxV - m_asp->minV, 1);
 			D3DXMatrixTranslation(&tm, (int)texWidth * -0.5f + m_asp->minU, (int)texHeight * 0.5f - m_asp->minV, 0);
 			m_device->SetTransform(D3DTS_WORLD, &(pivot * sm * tm));
-			SingletonInstance(SimpleDrawer)->DrawFrame(m_device, D3DXCOLOR(1, 0, 1, 1));
+			SingletonInstance(SimpleDrawer)->DrawFrame(m_device, D3DXCOLOR(0, 1, 0, 1));
 		}
 
 		//크로스헤드
@@ -453,7 +453,7 @@ bool ASPEditor::OpenFileReferenceWindow(wchar_t* path, bool forSave)
 
 
 
-ASPEUI_GridInfo::ASPEUI_GridInfo(LPDIRECT3DDEVICE9 device)
+ASPE_UI_GridInfo::ASPE_UI_GridInfo(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
 
 	, m_renderTarget(nullptr)
@@ -464,14 +464,14 @@ ASPEUI_GridInfo::ASPEUI_GridInfo(LPDIRECT3DDEVICE9 device)
 
 	D3DXCreateFontW(m_device, 20, 0, FW_DONTCARE, 0, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, nullptr, &m_font);
 }
-ASPEUI_GridInfo::~ASPEUI_GridInfo()
+ASPE_UI_GridInfo::~ASPE_UI_GridInfo()
 {
 	m_renderTarget->Release();
 }
 
 
 
-void ASPEUI_GridInfo::Render(const POINT & gridInterval)
+void ASPE_UI_GridInfo::Render(const POINT & gridInterval)
 {
 	LPDIRECT3DSURFACE9 mySurface;
 	m_renderTarget->GetSurfaceLevel(0, &mySurface);
@@ -502,7 +502,7 @@ void ASPEUI_GridInfo::Render(const POINT & gridInterval)
 
 
 
-ASPEUI_ASPInfo::ASPEUI_ASPInfo(LPDIRECT3DDEVICE9 device)
+ASPE_UI_ASPInfo::ASPE_UI_ASPInfo(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
 
 	, m_renderTarget(nullptr)
@@ -513,13 +513,13 @@ ASPEUI_ASPInfo::ASPEUI_ASPInfo(LPDIRECT3DDEVICE9 device)
 
 	D3DXCreateFontW(m_device, 20, 0, FW_DONTCARE, 0, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, nullptr, &m_font);
 }
-ASPEUI_ASPInfo::~ASPEUI_ASPInfo()
+ASPE_UI_ASPInfo::~ASPE_UI_ASPInfo()
 {
 }
 
 
 
-void ASPEUI_ASPInfo::Render(const ASP& asp)
+void ASPE_UI_ASPInfo::Render(const ASPE_ASP& asp)
 {
 	LPDIRECT3DSURFACE9 mySurface;
 	m_renderTarget->GetSurfaceLevel(0, &mySurface);
@@ -552,7 +552,7 @@ void ASPEUI_ASPInfo::Render(const ASP& asp)
 
 
 
-ASPEUI_ASPListInfo::ASPEUI_ASPListInfo(LPDIRECT3DDEVICE9 device)
+ASPE_UI_ASPListInfo::ASPE_UI_ASPListInfo(LPDIRECT3DDEVICE9 device)
 	: m_device(device)
 
 	, m_renderTarget(nullptr)
@@ -563,13 +563,13 @@ ASPEUI_ASPListInfo::ASPEUI_ASPListInfo(LPDIRECT3DDEVICE9 device)
 
 	D3DXCreateFontW(m_device, 20, 0, FW_DONTCARE, 0, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, nullptr, &m_font);
 }
-ASPEUI_ASPListInfo::~ASPEUI_ASPListInfo()
+ASPE_UI_ASPListInfo::~ASPE_UI_ASPListInfo()
 {
 }
 
 
 
-void ASPEUI_ASPListInfo::Render(const std::list<ASP*>& aspList)
+void ASPE_UI_ASPListInfo::Render(const std::list<ASPE_ASP*>& aspList)
 {
 	LPDIRECT3DSURFACE9 mySurface;
 	m_renderTarget->GetSurfaceLevel(0, &mySurface);
@@ -585,7 +585,7 @@ void ASPEUI_ASPListInfo::Render(const std::list<ASP*>& aspList)
 		
 		for (auto& pAsp : aspList)
 		{
-			ASP& asp = *pAsp;
+			ASPE_ASP& asp = *pAsp;
 			m_font->DrawTextW(g_sprtie, (L"ASP : " + asp.name).data()						, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
 			m_font->DrawTextW(g_sprtie, (L" - min U : " + std::to_wstring(asp.minU)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
 			m_font->DrawTextW(g_sprtie, (L" - min V : " + std::to_wstring(asp.minV)).data()	, -1, &rc, DT_LEFT | DT_TOP | DT_NOCLIP, D3DXCOLOR(1, 1, 1, 1));	rc.top = rc.bottom += 30;
