@@ -2,21 +2,15 @@
 #include <vector>
 #include <filesystem>
 
-//InputDevice
-#include "C:/.Arroria/Arroria SDK/InputDevice/lib/InputDevice.h"
+//IMEDevice
+#include <Ime.h>
+#include "./lib/IMEDevice.h"
 #ifndef _DEBUG
-#pragma comment (lib, "C:/.Arroria/Arroria SDK/InputDevice/lib/InputDevice.lib")
+#pragma comment (lib, "./lib/IMEDevice.lib")
 #else
-#pragma comment (lib, "C:/.Arroria/Arroria SDK/InputDevice/lib/InputDeviceD.lib")
+#pragma comment (lib, "./lib/IMEDeviceD.lib")
 #endif
 
-//IMEDevice
-#include "C:/.Arroria/Arroria SDK/IMEDevice/lib/IMEDevice.h"
-#ifndef _DEBUG
-#pragma comment (lib, "C:/.Arroria/Arroria SDK/IMEDevice/lib/IMEDevice.lib")
-#else
-#pragma comment (lib, "C:/.Arroria/Arroria SDK/IMEDevice/lib/IMEDeviceD.lib")
-#endif
 
 struct ASP;
 struct ASPE_RefTex;

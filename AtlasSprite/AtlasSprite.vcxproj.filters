@@ -11,9 +11,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="mng">
-      <UniqueIdentifier>{cb733043-fc78-43b2-94b5-ee35e69beb23}</UniqueIdentifier>
-    </Filter>
     <Filter Include="singleton">
       <UniqueIdentifier>{d0d90286-12ce-48e5-89be-c510aef080fa}</UniqueIdentifier>
     </Filter>
@@ -43,10 +40,6 @@
     <ClInclude Include="ProcessManager.h">
       <Filter>_main</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\IME\IME\IME_Manager.h">
-      <Filter>mng</Filter>
-    </ClInclude>
-    <ClInclude Include="Atlas.h" />
     <ClInclude Include="Singleton.h">
       <Filter>singleton\interface</Filter>
     </ClInclude>
@@ -89,10 +82,6 @@
     <ClCompile Include="ProcessManager.cpp">
       <Filter>_main</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\IME\IME\IME_Manager.cpp">
-      <Filter>mng</Filter>
-    </ClCompile>
-    <ClCompile Include="Atlas.cpp" />
     <ClCompile Include="Singleton.cpp">
       <Filter>singleton\interface</Filter>
     </ClCompile>

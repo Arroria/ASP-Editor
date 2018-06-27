@@ -151,9 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\IME\IME\IME_Manager.h" />
     <ClInclude Include="ASPEditor.h" />
-    <ClInclude Include="Atlas.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FrameRenderer.h" />
     <ClInclude Include="LineRenderer.h" />
@@ -168,9 +166,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\IME\IME\IME_Manager.cpp" />
     <ClCompile Include="ASPEditor.cpp" />
-    <ClCompile Include="Atlas.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FrameRenderer.cpp" />
     <ClCompile Include="LineRenderer.cpp" />

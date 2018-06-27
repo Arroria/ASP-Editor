@@ -1,8 +1,11 @@
 #include "stdafx.h"
 #include "ASPEditor.h"
 
-#include <Ime.h>
+
+//OPENFILENAME, GetOpenFileName »ç¿ë
 #include <commdlg.h>
+
+
 
 constexpr static bool IsSucceeded = true;
 constexpr static bool IsFailed = false;
